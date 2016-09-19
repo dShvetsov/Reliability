@@ -36,7 +36,7 @@ bool parse(int argc, char **_argv_)
     typedef std::vector<std::string> Argv;
     Argv argv;
     /* lets make list of argv */
-    for (int i = 0; i < argc; i++){
+    for (int i = 1; i < argc; i++){
         argv.push_back(std::string(_argv_[i]));
     }
     // parsing "-count" and "-file"
@@ -51,23 +51,26 @@ bool parse(int argc, char **_argv_)
             }
             // delete handled elements
             argv.erase(i, i + 2);
+            i --;
        } else if (*i == "-count"){ // if count
             isCount = true;
             // delete handled element
             argv.erase(i);
+            i--;
        }
     }
     if (argv.size() != 4){
         return false;
     }
     try{
-    //std::atoi is more pretty
+    //std::stoi is more pretty
          param.f_a = std::atoi(argv[0].c_str());
          param.f_b = std::atoi(argv[1].c_str());
          param.g_a = std::atoi(argv[2].c_str());
          param.g_a = std::atoi(argv[3].c_str());
     }
     catch(...){
+    // if std::atoi change on std::stoi this will useful :)
         return false;
     }
     return true;
