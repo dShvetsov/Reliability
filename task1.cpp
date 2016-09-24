@@ -140,11 +140,78 @@ State exec_f(State st)
         st.f_y = 1;
         break;
     case 12 : break;
-    default : throw "error";
+    default : throw "undefined instruction in f function";
+    }
     return st;
-   }
 }
 
+State exec_g(State st)
+{
+    switch(st.c_g) {
+        case 0:
+            st.c_g = 1;
+            st.und_c_x = true;
+            st.und_c_y = true;
+        break;
+        case 1:
+            st.c_g = 2;
+            st.g_x = 2;
+        break;
+        case 2:
+            st.c_g = 3;
+            st.g_y = 2;
+        break;
+        case 3:
+            st.c_g = 4;
+            st.h = 2;
+        break;
+        case 4:
+            st.c_g = st.h < param.g_a ? 5 : 7;
+        break;
+        case 5:
+            st.c_g = 6;
+            st.h = param.g_a;
+        break;
+        case 6:
+            st.c_g = 7;
+            st.g_y = 5;
+        break;
+        case 7:
+            st.c_g = 8;
+            st.h = param.g_a - st.g_x;
+        break;
+        case 8:
+            st.c_g = 9;
+            st.h = st.g_x - param.g_a;
+        break;
+        case 9:
+            st.c_g = st.g_x < 5 ? 10 : 16;
+        break;
+        case 10:
+            st.c_g = st.h > 0 > 11 : 12;
+        break;
+        case 11:
+            st.c_g = 16;
+        break;
+        case 12:
+            st.c_g = 13;
+            st.g_y = 6;
+        break;
+        case 13:
+            st.c_g = st.h > st.g_y - st.g_x;
+        break;
+        case 14:
+            st.c_g = 15;
+            st.h = st.g_x - st.g_y;
+        break;
+        case 15:
+            st.h = st.g_y;
+        break;
+        case 16: break;
+        default : throw "undefined instruction in g function";
+    }
+    return st;
+}
 int main(int argc, char ** argv)
 {
     if (!parse(argc, argv)){
