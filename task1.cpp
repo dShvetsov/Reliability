@@ -102,14 +102,17 @@ State exec_f(State st)
     case 1 :
         st.c_f = 2;
         st.f_x = 1;
+        st.und_f_x = false;
         break;
     case 2 :
         st.c_f = 3;
         st.f_y = 4;
+        st.und_f_y = false;
         break;
     case 3 :
         st.c_f = 4;
         st.h = 1;
+        st.und_h false;
         break;
     case 4 : 
         st.c_f = st.f_y > 5 ? 5 : 12;
@@ -123,10 +126,12 @@ State exec_f(State st)
     case 7 :
         st.c_f = 12;
         st.f_y = 1;
+        st.und_f_y = false;
         break;
     case 8 : 
         st.c_f = 12;
         st.f_y = 4;
+        st.und_f_y = false;
         break;
     case 9 :
         st.c_f = st.c_y > 7 ? 10 : 11;
@@ -134,10 +139,12 @@ State exec_f(State st)
     case 10 :
         st.c_f = 11;
         st.f_x = 5;
+        st.und_f_x = false;
         break;
     case 11 :
         st.c_f = 12;
         st.f_y = 1;
+        st.und_f_y = false;
         break;
     case 12 : break;
     default : throw "undefined instruction in f function";
@@ -156,14 +163,17 @@ State exec_g(State st)
         case 1:
             st.c_g = 2;
             st.g_x = 2;
+            st.und_g_x = false;
         break;
         case 2:
             st.c_g = 3;
             st.g_y = 2;
+            st.und_g_y = false;
         break;
         case 3:
             st.c_g = 4;
             st.h = 2;
+            st.und_h = false;
         break;
         case 4:
             st.c_g = st.h < param.g_a ? 5 : 7;
@@ -171,18 +181,22 @@ State exec_g(State st)
         case 5:
             st.c_g = 6;
             st.h = param.g_a;
+            st.und_h = false;
         break;
         case 6:
             st.c_g = 7;
             st.g_y = 5;
+            st.und_g_y = false;
         break;
         case 7:
             st.c_g = 8;
             st.h = param.g_a - st.g_x;
+            st.und_h = false;
         break;
         case 8:
             st.c_g = 9;
             st.h = st.g_x - param.g_a;
+            st.und_h = false;
         break;
         case 9:
             st.c_g = st.g_x < 5 ? 10 : 16;
@@ -196,6 +210,7 @@ State exec_g(State st)
         case 12:
             st.c_g = 13;
             st.g_y = 6;
+            st.und_g_y = false;
         break;
         case 13:
             st.c_g = st.h > st.g_y - st.g_x;
@@ -203,9 +218,11 @@ State exec_g(State st)
         case 14:
             st.c_g = 15;
             st.h = st.g_x - st.g_y;
+            st.und_h = false;
         break;
         case 15:
             st.h = st.g_y;
+            st.und_h = false;
         break;
         case 16: break;
         default : throw "undefined instruction in g function";
