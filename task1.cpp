@@ -305,6 +305,7 @@ State exec_g(State st)
             st.und_h = false;
         break;
         case 15:
+            st.c_g = 9;
             st.h = st.g_y;
             st.und_h = false;
         break;
@@ -320,7 +321,6 @@ void execution(State st)
         return;
     }
     states.insert(st);
-    std::cout << st << std::endl;
     if (st.c_f != 12 ){
         execution(exec_f(st));
     }
@@ -337,5 +337,6 @@ int main(int argc, char ** argv)
     st.c_f = 0;
     st.c_g = 0;
     execution(st);
+    OUT << states.size();
     return 0;
 }
