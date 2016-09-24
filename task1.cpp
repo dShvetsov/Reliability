@@ -74,6 +74,77 @@ bool parse(int argc, char **_argv_)
     return true;
     
 }
+
+class State{
+public:
+    int c_f;
+    int c_g;
+    int f_x;
+    bool und_f_x;
+    int f_y;
+    bool und_f_y;
+    int g_x;
+    bool und_g_x;
+    int g_y;
+    bool und_g_y;
+    int h;
+    bool und_h;
+}
+
+State exec_f(State st)
+{
+    switch (st.c_f){
+    case 0 : 
+        st.c_f = 1;
+        st.und_f_x = true;
+        st.und_f_y = true;
+        break;
+    case 1 :
+        st.c_f = 2;
+        st.f_x = 1;
+        break;
+    case 2 :
+        st.c_f = 3;
+        st.f_y = 4;
+        break;
+    case 3 :
+        st.c_f = 4;
+        st.h = 1;
+        break;
+    case 4 : 
+        st.c_f = st.f_y > 5 ? 5 : 12;
+        break;
+    case 5 :
+        st.c_f = st.f_y > 1 ? 6 : 9;
+        break;
+    case 6 :
+        st.c_f = st.h > param.f_a ? 7 : 8;
+        break;
+    case 7 :
+        st.c_f = 12;
+        st.f_y = 1;
+        break;
+    case 8 : 
+        st.c_f = 12;
+        st.f_y = 4;
+        break;
+    case 9 :
+        st.c_f = st.c_y > 7 ? 10 : 11;
+        break;
+    case 10 :
+        st.c_f = 11;
+        st.f_x = 5;
+        break;
+    case 11 :
+        st.c_f = 12;
+        st.f_y = 1;
+        break;
+    case 12 : break;
+    default : throw "error";
+    return st;
+   }
+}
+
 int main(int argc, char ** argv)
 {
     if (!parse(argc, argv)){
