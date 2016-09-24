@@ -63,14 +63,12 @@ bool parse(int argc, char **_argv_)
         return false;
     }
     try{
-    //std::stoi is more pretty
-         param.f_a = std::atoi(argv[0].c_str());
-         param.f_b = std::atoi(argv[1].c_str());
-         param.g_a = std::atoi(argv[2].c_str());
-         param.g_a = std::atoi(argv[3].c_str());
+         param.f_a = std::stoi(argv[0].c_str());
+         param.f_b = std::stoi(argv[1].c_str());
+         param.g_a = std::stoi(argv[2].c_str());
+         param.g_a = std::stoi(argv[3].c_str());
     }
     catch(...){
-    // if std::atoi change on std::stoi this will useful :)
         return false;
     }
     return true;
