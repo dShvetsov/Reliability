@@ -1,7 +1,9 @@
 #include <iostream>
+#include <set>
 #include <cstdlib>
 #include <fstream>
 #include <string>
+#include <cstdio>
 #include <vector>
 #include <iterator>
 
@@ -89,7 +91,89 @@ public:
     bool und_g_y;
     int h;
     bool und_h;
-}
+    friend std::ostream& operator << (std::ostream& _out, const State& st)
+    {
+        _out << st.c_f << ", " << st.c_g << ", "; 
+        if (st.c_f == 0) {
+            _out << "-, -, ";
+        } else {
+            if(st.und_f_x){
+                _out << "#, " ;
+            } else {
+                _out << st.f_x << ", "; 
+            }
+            if(st.und_f_y){
+                _out << "#, " ;
+            } else {
+                _out << st.f_y << ", "; 
+            }
+        }
+        if (st.c_g == 0) {
+            _out << "-, -, ";
+        } else {
+            if(st.und_g_x){
+                _out << "#, " ;
+            } else {
+                _out << st.g_x << ", "; 
+            }
+            if(st.und_g_y){
+                _out << "#, " ;
+            } else {
+                _out << st.g_y << ", "; 
+            }
+        }
+        if(st.und_h){
+            _out << "#, " ;
+        } else {
+            _out << st.h;
+        }
+        return _out;
+    }
+    
+    bool operator == (const State o) const {
+        return c_f == o.c_f && c_g == o.c_g && 
+               ((und_f_x && o.und_f_x) || f_x == o.f_x) &&
+               ((und_f_y && o.und_f_y) || f_y == o.f_y) &&
+               ((und_g_x && o.und_g_x) || g_x == o.g_x) &&
+               ((und_g_y && o.und_g_y) || g_y == o.g_y) &&
+               ((und_h && o.und_h) || h == o.h);
+    }
+
+    bool operator < (const State o) const {
+        if (operator==(o)) return false; 
+        if (c_f != o.c_f) return c_f < o.c_f;
+        if (c_g != o.c_g) return c_g < o.c_g;
+        if (!((und_f_x && o.und_f_x) || f_x == o.f_x)){
+            if (und_f_x) return true;
+            else if(o.und_f_x) return false;
+            else return f_x < o.f_x;
+        }
+        if (!((und_f_x && o.und_f_y) || f_y == o.f_y)){
+            if (und_f_y) return true;
+            else if(o.und_f_y) return false;
+            else return f_y < o.f_y;
+        }
+        if (!((und_g_x && o.und_g_x) || f_x == o.g_x)){
+            if (und_g_x) return true;
+            else if(o.und_g_x) return false;
+            else return g_x < o.g_x;
+        }
+        if (!((und_g_y && o.und_g_y) || g_y == o.g_y)){
+            if (und_g_y) return true;
+            else if(o.und_g_y) return false;
+            else return g_y < o.g_y;
+        }
+        if (!((und_h && o.und_h) || h == o.h)){
+            if (und_h) return true;
+            else if(o.und_h) return false;
+            else return h < o.h;
+        }
+        return false; 
+    }
+
+};
+
+std::set<State> states;
 
 State exec_f(State st)
 {
@@ -112,7 +196,7 @@ State exec_f(State st)
     case 3 :
         st.c_f = 4;
         st.h = 1;
-        st.und_h false;
+        st.und_h =  false;
         break;
     case 4 : 
         st.c_f = st.f_y > 5 ? 5 : 12;
@@ -134,7 +218,7 @@ State exec_f(State st)
         st.und_f_y = false;
         break;
     case 9 :
-        st.c_f = st.c_y > 7 ? 10 : 11;
+        st.c_f = st.f_y > 7 ? 10 : 11;
         break;
     case 10 :
         st.c_f = 11;
@@ -157,8 +241,8 @@ State exec_g(State st)
     switch(st.c_g) {
         case 0:
             st.c_g = 1;
-            st.und_c_x = true;
-            st.und_c_y = true;
+            st.und_g_x = true;
+            st.und_g_y = true;
         break;
         case 1:
             st.c_g = 2;
@@ -202,7 +286,7 @@ State exec_g(State st)
             st.c_g = st.g_x < 5 ? 10 : 16;
         break;
         case 10:
-            st.c_g = st.h > 0 > 11 : 12;
+            st.c_g = st.h > 0 ? 11 : 12;
         break;
         case 11:
             st.c_g = 16;
@@ -229,10 +313,29 @@ State exec_g(State st)
     }
     return st;
 }
+
+void execution(State st)
+{
+    if (states.find(st) != states.end()){
+        return;
+    }
+    states.insert(st);
+    std::cout << st << std::endl;
+    if (st.c_f != 12 ){
+        execution(exec_f(st));
+    }
+    if (st.c_g != 16) {
+        execution(exec_g(st));
+    }
+}
 int main(int argc, char ** argv)
 {
     if (!parse(argc, argv)){
         about();
     }
+    State st;
+    st.c_f = 0;
+    st.c_g = 0;
+    execution(st);
     return 0;
 }
