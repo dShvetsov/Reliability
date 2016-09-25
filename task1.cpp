@@ -4,7 +4,6 @@
  ****************************/
 
 #include <iostream>
-#include <utility>
 #include <set>
 #include <cstdlib>
 #include <fstream>
@@ -15,6 +14,7 @@
 
 std::fstream out;
 
+// params of program
 struct __param__ {
     int f_a;
     int f_b;
@@ -23,6 +23,7 @@ struct __param__ {
 } param;
 
 bool isCount = false;
+
 /** 
  * print information about program
  */
@@ -72,18 +73,21 @@ bool parse(int argc, char **_argv_)
         return false;
     }
     try{
+         // convertion string to integer
          param.f_a = std::stoi(argv[0].c_str());
          param.f_b = std::stoi(argv[1].c_str());
          param.g_a = std::stoi(argv[2].c_str());
          param.g_a = std::stoi(argv[3].c_str());
     }
     catch(...){
+        // If parametrs convertion failed
         return false;
     }
     return true;
     
 }
 
+// State of programm
 class State{
 public:
     int c_f;
@@ -103,6 +107,9 @@ public:
               und_g_x(true), und_g_y(true), und_h(true)
     { }
 
+    /**
+     * print information about state
+     */
     friend std::ostream& operator << (std::ostream& _out, const State& st)
     {
         _out << st.c_f << ", " << st.c_g << ", "; 
@@ -142,6 +149,9 @@ public:
         return _out;
    }
     
+    /**
+     * equal operator
+     */
     bool operator == (const State o) const {
         return c_f == o.c_f && c_g == o.c_g && 
                ((und_f_x && o.und_f_x) || f_x == o.f_x) &&
@@ -151,6 +161,10 @@ public:
                ((und_h && o.und_h) || h == o.h);
     }
 
+    /** 
+     * This operator is needed for std::set
+     * compare of state do by comparing of members of object
+     */
     bool operator < (const State o) const {
         if (operator==(o)) return false; 
         if (c_f != o.c_f) return c_f < o.c_f;
@@ -185,8 +199,11 @@ public:
 
 };
 
+// states of program
 std::set<State> states;
 
+// models of f function
+// exec_f take State of program and return state after execution of single instruction
 State exec_f(State st)
 {
     switch (st.c_f){
@@ -248,6 +265,8 @@ State exec_f(State st)
     return st;
 }
 
+// models of g function
+// exec_g take State of program and return state after execution of single instruction
 State exec_g(State st)
 {
     switch(st.c_g) {
@@ -327,19 +346,28 @@ State exec_g(State st)
     return st;
 }
 
+/* main function of alghorithm
+ * this function recursive call itself with exec_f and then exec_g
+ */
 void execution(State st)
 {
+    // if this state already was
     if (states.find(st) != states.end()){
         return;
     }
     states.insert(st);
+    // if function f ended
     if (st.c_f != 12 ){
+        // execute instruction of f
         execution(exec_f(st));
     }
+    // if function g ended
     if (st.c_g != 16) {
+        // execute instriction of g
         execution(exec_g(st));
     }
 }
+
 int main(int argc, char ** argv)
 {
     if (!parse(argc, argv)){
