@@ -1,4 +1,10 @@
+/***************************** 
+ * author : DENIS SHVETSOV
+ * year : 2016
+ ****************************/
+
 #include <iostream>
+#include <utility>
 #include <set>
 #include <cstdlib>
 #include <fstream>
@@ -7,8 +13,7 @@
 #include <vector>
 #include <iterator>
 
-const std::ostream *out = &std::cout;
-#define OUT (*out)
+std::fstream out;
 
 struct __param__ {
     int f_a;
@@ -41,13 +46,14 @@ bool parse(int argc, char **_argv_)
     for (int i = 1; i < argc; i++){
         argv.push_back(std::string(_argv_[i]));
     }
+    std::string filename = "states.txt";
     // parsing "-count" and "-file"
     for (std::vector<std::string>::iterator i = argv.begin() ; i != argv.end(); i++){
        // if file
        if (*i  == "-file"){
             // if after file doensnt exist element then error
             if ((i + 1) != argv.end()){
-                out = new std::fstream( (i+1)->c_str(), std::fstream::in);
+                filename = *(i + 1);
             } else {
                 return false;
             }
@@ -61,6 +67,7 @@ bool parse(int argc, char **_argv_)
             i--;
        }
     }
+    out.open(std::string("./") + filename, std::fstream::out | std::fstream::trunc);
     if (argv.size() != 4){
         return false;
     }
@@ -91,9 +98,19 @@ public:
     bool und_g_y;
     int h;
     bool und_h;
+
+    State() : c_f(0), c_g(0), und_f_x(true), und_f_y(true),
+              und_g_x(true), und_g_y(true), und_h(true)
+    { }
+
     friend std::ostream& operator << (std::ostream& _out, const State& st)
     {
         _out << st.c_f << ", " << st.c_g << ", "; 
+        if(st.und_h){
+            _out << "#, " ;
+        } else {
+            _out << st.h << ", ";
+        }
         if (st.c_f == 0) {
             _out << "-, -, ";
         } else {
@@ -122,13 +139,8 @@ public:
                 _out << st.g_y << ", "; 
             }
         }
-        if(st.und_h){
-            _out << "#, " ;
-        } else {
-            _out << st.h;
-        }
         return _out;
-    }
+   }
     
     bool operator == (const State o) const {
         return c_f == o.c_f && c_g == o.c_g && 
@@ -332,11 +344,18 @@ int main(int argc, char ** argv)
 {
     if (!parse(argc, argv)){
         about();
+        return 1;
     }
     State st;
     st.c_f = 0;
     st.c_g = 0;
     execution(st);
-    OUT << states.size();
+    out << "c_f, c_g, h, f.x, f.y, g.x, g.y\n";
+    for (auto i : states){
+        out << i << std::endl;
+    }
+    if(isCount){
+         std::cout << states.size() << std::endl;
+    }
     return 0;
 }
