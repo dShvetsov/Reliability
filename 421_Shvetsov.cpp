@@ -207,59 +207,59 @@ std::set<State> states;
 State exec_f(State st)
 {
     switch (st.c_f){
-    case 0 : 
+    case 0 :  // int x, y
         st.c_f = 1;
         st.und_f_x = true;
         st.und_f_y = true;
         break;
-    case 1 :
+    case 1 : // x = 1
         st.c_f = 2;
         st.f_x = 1;
         st.und_f_x = false;
         break;
-    case 2 :
+    case 2 : // y = 4
         st.c_f = 3;
         st.f_y = 4;
         st.und_f_y = false;
         break;
-    case 3 :
+    case 3 : // h = 1
         st.c_f = 4;
         st.h = 1;
         st.und_h =  false;
         break;
-    case 4 : 
+    case 4 : // if ( y > 5 )
         st.c_f = st.f_y > 5 ? 5 : 12;
         break;
-    case 5 :
+    case 5 : // if (y > 1)
         st.c_f = st.f_y > 1 ? 6 : 9;
         break;
-    case 6 :
+    case 6 : // if (h > a)
         st.c_f = st.h > param.f_a ? 7 : 8;
         break;
-    case 7 :
+    case 7 : // y = 1
         st.c_f = 12;
         st.f_y = 1;
         st.und_f_y = false;
         break;
-    case 8 : 
+    case 8 : // y = 4
         st.c_f = 12;
         st.f_y = 4;
         st.und_f_y = false;
         break;
-    case 9 :
+    case 9 : // if (y > 7)
         st.c_f = st.f_y > 7 ? 10 : 11;
         break;
-    case 10 :
+    case 10 : // x = 5
         st.c_f = 11;
         st.f_x = 5;
         st.und_f_x = false;
         break;
-    case 11 :
+    case 11 : // y = 1
         st.c_f = 12;
         st.f_y = 1;
         st.und_f_y = false;
         break;
-    case 12 : break;
+    case 12 : break; //return
     default : throw "undefined instruction in f function";
     }
     return st;
@@ -270,77 +270,77 @@ State exec_f(State st)
 State exec_g(State st)
 {
     switch(st.c_g) {
-        case 0:
+        case 0: // int x, y
             st.c_g = 1;
             st.und_g_x = true;
             st.und_g_y = true;
         break;
-        case 1:
+        case 1: // x = 2
             st.c_g = 2;
             st.g_x = 2;
             st.und_g_x = false;
         break;
-        case 2:
+        case 2: // y = 2
             st.c_g = 3;
             st.g_y = 2;
             st.und_g_y = false;
         break;
-        case 3:
+        case 3: // h = 2
             st.c_g = 4;
             st.h = 2;
             st.und_h = false;
         break;
-        case 4:
+        case 4: // if (h < a)
             st.c_g = st.h < param.g_a ? 5 : 7;
         break;
-        case 5:
+        case 5: // h = a
             st.c_g = 6;
             st.h = param.g_a;
             st.und_h = false;
         break;
-        case 6:
+        case 6: // y = 5
             st.c_g = 7;
             st.g_y = 5;
             st.und_g_y = false;
         break;
-        case 7:
+        case 7: // h = a - x
             st.c_g = 8;
             st.h = param.g_a - st.g_x;
             st.und_h = false;
         break;
-        case 8:
+        case 8: // h = x - a
             st.c_g = 9;
             st.h = st.g_x - param.g_a;
             st.und_h = false;
         break;
-        case 9:
+        case 9: // while ( x < 5 )
             st.c_g = st.g_x < 5 ? 10 : 16;
         break;
-        case 10:
+        case 10: // if (h > 0)
             st.c_g = st.h > 0 ? 11 : 12;
         break;
-        case 11:
+        case 11: // break
             st.c_g = 16;
         break;
-        case 12:
+        case 12: // y = 6
             st.c_g = 13;
             st.g_y = 6;
             st.und_g_y = false;
         break;
-        case 13:
+        case 13: // if (h > y - x)
             st.c_g = st.h > st.g_y - st.g_x;
         break;
-        case 14:
+        case 14: // h = x - y
             st.c_g = 15;
             st.h = st.g_x - st.g_y;
             st.und_h = false;
         break;
-        case 15:
+        case 15: // h = y
             st.c_g = 9;
             st.h = st.g_y;
             st.und_h = false;
         break;
-        case 16: break;
+        case 16: break; // return
         default : throw "undefined instruction in g function";
     }
     return st;
