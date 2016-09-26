@@ -11,6 +11,7 @@
 #include <cstdio>
 #include <vector>
 #include <iterator>
+#include <sstream>
 
 std::fstream out;
 
@@ -23,6 +24,7 @@ struct __param__ {
 } param;
 
 bool isCount = false;
+bool ltsOn = false;
 
 /** 
  * print information about program
@@ -66,7 +68,11 @@ bool parse(int argc, char **_argv_)
             // delete handled element
             argv.erase(i);
             i--;
-       }
+       } else if (*i == "-lts"){ // if lts
+            ltsOn = true;
+            argv.erase(i);
+            i--;
+        }
     }
     out.open(std::string("./") + filename, std::fstream::out | std::fstream::trunc);
     if (argv.size() != 4){
@@ -102,10 +108,34 @@ public:
     bool und_g_y;
     int h;
     bool und_h;
+    unsigned long id;
+    unsigned long from; // if 0 then initial
+    std::string link;
+    std::string colour; // ref if f, blue if g
 
     State() : c_f(0), c_g(0), und_f_x(true), und_f_y(true),
-              und_g_x(true), und_g_y(true), und_h(true)
+              und_g_x(true), und_g_y(true), und_h(true), id(0), from(0)
     { }
+
+    std::string dotName()
+    {
+        if (id == 0) throw "unexpected state";
+        std::stringstream ret;
+        ret << id << "[ label = \"";
+        ret << *this;
+        ret << "\"]\n";
+        return ret.str();
+    }
+
+    std::string dotLink()
+    {
+        if (id == 0) throw "unexpected state";
+        if (from == 0) return std::string();
+        std::stringstream ret;
+        ret << from << " -> " << id << "[label=\" " << link << " \" color=\"" <<
+            colour << "\"]";
+        return ret.str();
+    }
 
     /**
      * print information about state
@@ -206,58 +236,72 @@ std::set<State> states;
 // exec_f take State of program and return state after execution of single instruction
 State exec_f(State st)
 {
+    st.from = st.id;
+    st.colour = "red";
     switch (st.c_f){
     case 0 :  // int x, y
         st.c_f = 1;
         st.und_f_x = true;
         st.und_f_y = true;
+        st.link = "int x, y";
         break;
     case 1 : // x = 1
         st.c_f = 2;
         st.f_x = 1;
         st.und_f_x = false;
+        st.link = "x = 1";
         break;
     case 2 : // y = 4
         st.c_f = 3;
         st.f_y = 4;
         st.und_f_y = false;
+        st.link = "y = 4";
         break;
     case 3 : // h = 1
         st.c_f = 4;
         st.h = 1;
         st.und_h =  false;
+        st.link = "h = 1";
         break;
     case 4 : // if ( y > 5 )
         st.c_f = st.f_y > 5 ? 5 : 12;
+        st.link = st.f_y > 5 ? "y > 5" : "!(y > 5)";
         break;
     case 5 : // if (y > 1)
         st.c_f = st.f_y > 1 ? 6 : 9;
+        st.link = st.f_y > 1 ? "y > 1" : "!(y > 1)";
         break;
     case 6 : // if (h > a)
         st.c_f = st.h > param.f_a ? 7 : 8;
+        st.link = st.h > param.f_a ? "h > a" : "!(h > a)";
         break;
     case 7 : // y = 1
         st.c_f = 12;
         st.f_y = 1;
         st.und_f_y = false;
+        st.link = "y = 1";
         break;
     case 8 : // y = 4
         st.c_f = 12;
         st.f_y = 4;
         st.und_f_y = false;
+        st.link = "y = 4";
         break;
     case 9 : // if (y > 7)
         st.c_f = st.f_y > 7 ? 10 : 11;
+        st.link = st.f_y > 7 ? "y > 7" : "!(y < 7)";
         break;
     case 10 : // x = 5
         st.c_f = 11;
         st.f_x = 5;
         st.und_f_x = false;
+        st.link = "x = 5";
         break;
     case 11 : // y = 1
         st.c_f = 12;
         st.f_y = 1;
         st.und_f_y = false;
+        st.link = "y = 1";
         break;
     case 12 : break; //return
     default : throw "undefined instruction in f function";
@@ -269,76 +313,94 @@ State exec_f(State st)
 // exec_g take State of program and return state after execution of single instruction
 State exec_g(State st)
 {
+    st.from = st.id;
+    st.colour = "blue";
     switch(st.c_g) {
         case 0: // int x, y
             st.c_g = 1;
             st.und_g_x = true;
             st.und_g_y = true;
+            st.link = "int x, y";
         break;
         case 1: // x = 2
             st.c_g = 2;
             st.g_x = 2;
             st.und_g_x = false;
+            st.link = "x = 2";
         break;
         case 2: // y = 2
             st.c_g = 3;
             st.g_y = 2;
             st.und_g_y = false;
+            st.link = "y = 2";
         break;
         case 3: // h = 2
             st.c_g = 4;
             st.h = 2;
             st.und_h = false;
+            st.link = "h = 2";
         break;
         case 4: // if (h < a)
             st.c_g = st.h < param.g_a ? 5 : 7;
+            st.link = st.h < param.g_a ? "h < a" : "!(h < a)";
         break;
         case 5: // h = a
             st.c_g = 6;
             st.h = param.g_a;
             st.und_h = false;
+            st.link = "h = a";
         break;
         case 6: // y = 5
             st.c_g = 7;
             st.g_y = 5;
             st.und_g_y = false;
+            st.link = "y = 5";
         break;
         case 7: // h = a - x
             st.c_g = 8;
             st.h = param.g_a - st.g_x;
             st.und_h = false;
+            st.link = "h = a - x";
         break;
         case 8: // h = x - a
             st.c_g = 9;
             st.h = st.g_x - param.g_a;
             st.und_h = false;
+            st.link = "h = x - a";
         break;
         case 9: // while ( x < 5 )
             st.c_g = st.g_x < 5 ? 10 : 16;
+            st.link = st.g_x < 5 ? "x < 5" : "!(x < 5)";
         break;
         case 10: // if (h > 0)
             st.c_g = st.h > 0 ? 11 : 12;
+            st.link = st.h > 0 ? "h > 0" : "!(h > 0)";
         break;
         case 11: // break
             st.c_g = 16;
+            st.link = "break";
         break;
         case 12: // y = 6
             st.c_g = 13;
             st.g_y = 6;
             st.und_g_y = false;
+            st.link = "y = 6";
         break;
         case 13: // if (h > y - x)
             st.c_g = st.h > st.g_y - st.g_x;
+            st.link = st.h > st.g_y ? "h > y - x" : "!(h > y - x)";
         break;
         case 14: // h = x - y
             st.c_g = 15;
             st.h = st.g_x - st.g_y;
             st.und_h = false;
+            st.link = "h = x - y";
         break;
         case 15: // h = y
             st.c_g = 9;
             st.h = st.g_y;
             st.und_h = false;
+            st.link = "h = y";
         break;
         case 16: break; // return
         default : throw "undefined instruction in g function";
@@ -351,10 +413,13 @@ State exec_g(State st)
  */
 void execution(State st)
 {
+    // we assign each new state own id
+    static long next_id = 1;
     // if this state already was
     if (states.find(st) != states.end()){
         return;
     }
+    st.id = next_id++;
     states.insert(st);
     // if function f ended
     if (st.c_f != 12 ){
