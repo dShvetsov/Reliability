@@ -14,6 +14,7 @@
 #include <sstream>
 
 std::fstream out;
+std::fstream ltsout;
 
 // params of program
 struct __param__ {
@@ -69,10 +70,18 @@ bool parse(int argc, char **_argv_)
             argv.erase(i);
             i--;
        } else if (*i == "-lts"){ // if lts
-            ltsOn = true;
-            argv.erase(i);
-            i--;
-        }
+             ltsOn = true;
+             // if after file doensnt exist element then error
+            if ((i + 1) != argv.end()){
+                ltsout.open(std::string("./") + *(i + 1),
+                            std::fstream::out | std::fstream::trunc);
+            } else {
+                return false;
+            }
+            // delete handled elements
+            argv.erase(i, i + 2);
+            i --;
+       }
     }
     out.open(std::string("./") + filename, std::fstream::out | std::fstream::trunc);
     if (argv.size() != 4){
@@ -133,7 +142,7 @@ public:
         if (from == 0) return std::string();
         std::stringstream ret;
         ret << from << " -> " << id << "[label=\" " << link << " \" color=\"" <<
-            colour << "\"]";
+            colour << "\"]\n";
         return ret.str();
     }
 
@@ -416,11 +425,20 @@ void execution(State st)
     // we assign each new state own id
     static long next_id = 1;
     // if this state already was
-    if (states.find(st) != states.end()){
-        return;
+    auto it = states.find(st);
+    if ( it != states.end()){
+        if (ltsOn){
+            st.id = it->id;
+            ltsout << st.dotLink();
+        }
+         return;
     }
     st.id = next_id++;
     states.insert(st);
+    if (ltsOn){
+        ltsout << st.dotName();
+        ltsout << st.dotLink();
+    }
     // if function f ended
     if (st.c_f != 12 ){
         // execute instruction of f
@@ -442,6 +460,9 @@ int main(int argc, char ** argv)
     State st;
     st.c_f = 0;
     st.c_g = 0;
+    if (ltsOn){
+        ltsout << "digraph G{\n";
+    }
     execution(st);
     out << "c_f, c_g, h, f.x, f.y, g.x, g.y\n";
     for (auto i : states){
@@ -450,5 +471,8 @@ int main(int argc, char ** argv)
     if(isCount){
          std::cout << states.size() << std::endl;
     }
+    if (ltsOn)
+        ltsout << "}\n";
+        ltsout.close();
     return 0;
 }
