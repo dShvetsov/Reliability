@@ -154,11 +154,11 @@ public:
      */
     bool operator == (const State o) const {
         return c_f == o.c_f && c_g == o.c_g && 
-               ((und_f_x && o.und_f_x) || f_x == o.f_x) &&
-               ((und_f_y && o.und_f_y) || f_y == o.f_y) &&
-               ((und_g_x && o.und_g_x) || g_x == o.g_x) &&
-               ((und_g_y && o.und_g_y) || g_y == o.g_y) &&
-               ((und_h && o.und_h) || h == o.h);
+               ((und_f_x && o.und_f_x) || (f_x == o.f_x && !und_f_x && !o.und_f_x)) &&
+               ((und_f_y && o.und_f_y) || (f_y == o.f_y && !und_f_y && !o.und_f_y)) &&
+               ((und_g_x && o.und_g_x) || (g_x == o.g_x && !und_g_x && !o.und_g_x)) &&
+               ((und_g_y && o.und_g_y) || (g_y == o.g_y && !und_g_y && !o.und_g_y)) &&
+               ((und_h && o.und_h) || (h == o.h && !und_h && !o.und_h));
     }
 
     /** 
@@ -169,27 +169,27 @@ public:
         if (operator==(o)) return false; 
         if (c_f != o.c_f) return c_f < o.c_f;
         if (c_g != o.c_g) return c_g < o.c_g;
-        if (!((und_f_x && o.und_f_x) || f_x == o.f_x)){
+        if (!((und_f_x && o.und_f_x) || (f_x == o.f_x && !und_f_x && !o.und_f_x))){
             if (und_f_x) return true;
             else if(o.und_f_x) return false;
             else return f_x < o.f_x;
         }
-        if (!((und_f_x && o.und_f_y) || f_y == o.f_y)){
+        if (!((und_f_x && o.und_f_y) || (f_y == o.f_y && !und_f_y && !o.und_f_y))){
             if (und_f_y) return true;
             else if(o.und_f_y) return false;
             else return f_y < o.f_y;
         }
-        if (!((und_g_x && o.und_g_x) || f_x == o.g_x)){
+        if (!((und_g_x && o.und_g_x) || (g_x == o.g_x && !und_g_x && !o.und_g_x))){
             if (und_g_x) return true;
             else if(o.und_g_x) return false;
             else return g_x < o.g_x;
         }
-        if (!((und_g_y && o.und_g_y) || g_y == o.g_y)){
+        if (!((und_g_y && o.und_g_y) || (g_y == o.g_y && !und_g_y && !o.und_g_y))){
             if (und_g_y) return true;
             else if(o.und_g_y) return false;
             else return g_y < o.g_y;
         }
-        if (!((und_h && o.und_h) || h == o.h)){
+        if (!((und_h && o.und_h) || (h == o.h && !und_h && !o.und_h))){
             if (und_h) return true;
             else if(o.und_h) return false;
             else return h < o.h;
