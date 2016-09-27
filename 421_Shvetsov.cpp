@@ -26,6 +26,7 @@ struct __param__ {
 
 bool isCount = false;
 bool ltsOn = false;
+bool hOn = false;
 
 /** 
  * print information about program
@@ -70,7 +71,7 @@ bool parse(int argc, char **_argv_)
             argv.erase(i);
             i--;
        } else if (*i == "-lts"){ // if lts
-             ltsOn = true;
+            ltsOn = true;
              // if after file doensnt exist element then error
             if ((i + 1) != argv.end()){
                 ltsout.open(std::string("./") + *(i + 1),
@@ -81,6 +82,20 @@ bool parse(int argc, char **_argv_)
             // delete handled elements
             argv.erase(i, i + 2);
             i --;
+       } else if (*i == "-h"){ // task 2.3
+            hOn = true;
+            ltsOn = true; // as we write in ltsout file
+             // if after file doensnt exist element then error
+            if ((i + 1) != argv.end()){
+                ltsout.open(std::string("./") + *(i + 1),
+                            std::fstream::out | std::fstream::trunc);
+            } else {
+                return false;
+            }
+            // delete handled elements
+            argv.erase(i, i + 2);
+            i --;
+
        }
     }
     out.open(std::string("./") + filename, std::fstream::out | std::fstream::trunc);
@@ -117,13 +132,15 @@ public:
     bool und_g_y;
     int h;
     bool und_h;
-    unsigned long id;
-    unsigned long from; // if 0 then initial
+    long id;
+    long from; // if 0 then initial
+    bool und_from;
     std::string link;
     std::string colour; // ref if f, blue if g
 
     State() : c_f(0), c_g(0), und_f_x(true), und_f_y(true),
               und_g_x(true), und_g_y(true), und_h(true), id(0), from(0)
+              , und_from(true)
     { }
 
     // print information in dot format
@@ -137,6 +154,17 @@ public:
         return ret.str();
     }
 
+    std::string dotName2()
+    {
+        std::stringstream ret;
+        if (und_h) {
+            ret << "und[label=\"#\"]\n";
+        } else {
+            ret << h << "[label=\"" << h << "\"]\n";
+        }
+        return ret.str();
+    }
+
     //print information about change state in dot format
     std::string dotLink()
     {
@@ -145,6 +173,23 @@ public:
         std::stringstream ret;
         ret << from << " -> " << id << "[label=\" " << link << " \" color=\"" <<
             colour << "\"]\n";
+        return ret.str();
+    }
+    std::string dotLink2()
+    {
+        if (from == 0 && not und_h) return std::string();
+        std::stringstream ret;
+        if (und_from)
+            ret << "und->";
+        else
+            ret << from << "->";
+        if (und_h)
+            ret << "und";
+        else 
+            ret << h;
+        ret << "[label=\" " << link << " \" color=\"" <<
+        colour << "\"]\n";
+        // needed replace from on previos h
         return ret.str();
     }
 
@@ -457,6 +502,46 @@ void execution(State st)
     }
 }
 
+bool equal(const State& s1, const State& s2) {
+    if (s1.und_h &&  s2.und_h) return true;
+    if (s1.und_h != s2.und_h) return false;
+    return s1.h == s2.h;
+    }
+
+void execution2(State st, bool needDrow = false)
+{
+    static std::set<std::string> outputLink;
+    static std::set<std::string> outputName;
+    std::string tmp2 = st.dotName2();
+    if (outputName.find(tmp2) == outputName.end()){
+            ltsout << tmp2;
+            outputName.insert(tmp2);
+         }
+    if (needDrow){
+         std::string tmp = st.dotLink2();
+         if (outputLink.find(tmp) == outputLink.end()){
+            ltsout << tmp;
+            outputLink.insert(tmp);
+         }
+    }
+    if (states.find(st) != states.end()){
+        return;
+    }
+    states.insert(st);
+    if (st.c_f != 12){
+        State tmp = exec_f(st);
+        tmp.from = st.h;
+        tmp.und_from = st.und_h;
+        execution2(tmp,  !equal(tmp,st));
+    }
+    if (st.c_g != 16){
+        State tmp = exec_g(st);
+        tmp.from = st.h;
+        tmp.und_from = st.und_h;
+        execution2(tmp,  !equal(tmp,st));
+    }
+}
+
 int main(int argc, char ** argv)
 {
     if (!parse(argc, argv)){
@@ -469,7 +554,13 @@ int main(int argc, char ** argv)
     if (ltsOn){
         ltsout << "digraph G{\n";
     }
-    execution(st);
+    if (!hOn) {
+        execution(st);
+    } else { 
+        st.from = 0;
+        st.und_from = true;
+        execution2(st, false);
+    }
     out << "c_f, c_g, h, f.x, f.y, g.x, g.y\n";
     for (auto i : states){
         out << i << std::endl;
