@@ -77,7 +77,7 @@ bool parse(int argc, char **_argv_)
          param.f_a = std::stoi(argv[0].c_str());
          param.f_b = std::stoi(argv[1].c_str());
          param.g_a = std::stoi(argv[2].c_str());
-         param.g_a = std::stoi(argv[3].c_str());
+         param.g_b = std::stoi(argv[3].c_str());
     }
     catch(...){
         // If parametrs convertion failed
