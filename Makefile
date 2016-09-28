@@ -10,3 +10,7 @@ build :  421_Shvetsov.cpp
 graph : build
 	./421_Shvetsov 1 2 3 4 -lts lts_m12.dot
 	dot lts_m12.dot -Tpng -olts_m12.png
+
+hgraph : build
+	./421_Shvetsov 1 2 3 4 -h abstract_lts_m12.dot
+	dot abstract_lts_m12.dot -Tpng -oabstract_lts_m12.png
