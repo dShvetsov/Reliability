@@ -126,6 +126,7 @@ public:
               und_g_x(true), und_g_y(true), und_h(true), id(0), from(0)
     { }
 
+    // print information in dot format
     std::string dotName()
     {
         if (id == 0) throw "unexpected state";
@@ -136,6 +137,7 @@ public:
         return ret.str();
     }
 
+    //print information about change state in dot format
     std::string dotLink()
     {
         if (id == 0) throw "unexpected state";
@@ -429,15 +431,17 @@ void execution(State st)
     // if this state already was
     auto it = states.find(st);
     if ( it != states.end()){
-        if (ltsOn){
+        if (ltsOn){ // if we needed write graph
             st.id = it->id;
             ltsout << st.dotLink();
         }
          return;
     }
+    // add id
     st.id = next_id++;
     states.insert(st);
     if (ltsOn){
+        // if we needed write graph
         ltsout << st.dotName();
         ltsout << st.dotLink();
     }
