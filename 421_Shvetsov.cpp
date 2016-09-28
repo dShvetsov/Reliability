@@ -477,12 +477,13 @@ int main(int argc, char ** argv)
     if(isCount){
          std::cout << states.size() << std::endl;
     }
-    if (ltsOn)
+    if (ltsOn) {
         ltsout << "}\n";
         ltsout.close();
         std::cout << "  graph builded (in format dot/grpahviz)\n";
         std::cout << "  state is : c_f, c_g, h, f.x, f.y. g.x, g.y\n";
         std::cout << "  color : red is f thread, blue is g thread.\n";
         std::cout << "  | \'#\' : undefined value. \'-\' : variable is not exist yet | \n";
+    }
     return 0;
 }
