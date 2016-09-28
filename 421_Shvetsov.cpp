@@ -205,15 +205,22 @@ public:
      * compare of state do by comparing of members of object
      */
     bool operator < (const State o) const {
-        if (operator==(o)) return false; 
+       // if (operator==(o)) return false; 
         if (c_f != o.c_f) return c_f < o.c_f;
         if (c_g != o.c_g) return c_g < o.c_g;
+
+        if (!((und_h && o.und_h) || (h == o.h && !und_h && !o.und_h))){
+            if (und_h) return true;
+            else if(o.und_h) return false;
+            else return h < o.h;
+        }
+ 
         if (!((und_f_x && o.und_f_x) || (f_x == o.f_x && !und_f_x && !o.und_f_x))){
             if (und_f_x) return true;
             else if(o.und_f_x) return false;
             else return f_x < o.f_x;
         }
-        if (!((und_f_x && o.und_f_y) || (f_y == o.f_y && !und_f_y && !o.und_f_y))){
+        if (!((und_f_y && o.und_f_y) || (f_y == o.f_y && !und_f_y && !o.und_f_y))){
             if (und_f_y) return true;
             else if(o.und_f_y) return false;
             else return f_y < o.f_y;
@@ -228,12 +235,7 @@ public:
             else if(o.und_g_y) return false;
             else return g_y < o.g_y;
         }
-        if (!((und_h && o.und_h) || (h == o.h && !und_h && !o.und_h))){
-            if (und_h) return true;
-            else if(o.und_h) return false;
-            else return h < o.h;
-        }
-        return false; 
+       return false; 
     }
 
 };
@@ -396,7 +398,7 @@ State exec_g(State st)
             st.link = "y = 6";
         break;
         case 13: // if (h > y - x)
-            st.c_g = st.h > st.g_y - st.g_x;
+            st.c_g = st.h > st.g_y - st.g_x ? 14 : 15;
             st.link = st.h > st.g_y ? "h > y - x" : "!(h > y - x)";
         break;
         case 14: // h = x - y
